@@ -12,11 +12,11 @@ import java.util.Properties;
 public class MiniApp {
     
     // BLOCKER: Hardcoded port number
-    private static final int SERVER_PORT = 8080;
-    
+    private static final int SERVER_PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+
     // BLOCKER: Hardcoded absolute file path
-    private static final String CONFIG_FILE_PATH = "/opt/app/config/app.properties";
-    private static final String LOG_FILE_PATH = "/var/log/mini-app.log";
+    private static final String CONFIG_FILE_PATH = System.getenv("CONFIG_PATH") != null ? System.getenv("CONFIG_PATH") : "config/app.properties";
+    private static final String LOG_FILE_PATH = System.getenv("LOG_FILE_PATH") != null ? System.getenv("LOG_FILE_PATH") : "/var/log/mini-app.log";
     
     public static void main(String[] args) {
         System.out.println("Starting Mini Java Application...");
@@ -57,16 +57,17 @@ public class MiniApp {
     private void initializeLogging() {
         try {
             // BLOCKER: Hardcoded absolute path for log file
-            File logDir = new File("/var/log");
+            String logDirPath = System.getenv("LOG_DIR") != null ? System.getenv("LOG_DIR") : "/var/log";
+            File logDir = new File(logDirPath);
             if (!logDir.exists()) {
                 logDir.mkdirs();
             }
-            
+
             File logFile = new File(LOG_FILE_PATH);
             if (!logFile.exists()) {
                 logFile.createNewFile();
             }
-            
+
             System.out.println("Logging initialized at: " + LOG_FILE_PATH);
         } catch (IOException e) {
             System.err.println("Failed to initialize logging: " + e.getMessage());

@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-java-app
+  namespace: mini-java-app
+  labels:
+    app: mini-java-app
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mini-java-app
+  template:
+    metadata:
+      labels:
+        app: mini-java-app
+        version: v1
+    spec:
+      containers:
+      - name: mini-java-app
+        image: {{IMAGE_URI}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        # Server configuration
+        - name: PORT
+          value: "8080"
+        - name: SERVER_HOST
+          value: "0.0.0.0"
+        
+        # Database configuration (external service)
+        - name: DB_URL
+          value: "{{DB_URL}}"
+        - name: DB_USERNAME
+          value: "{{DB_USERNAME}}"
+        - name: DB_PASSWORD
+          value: "{{DB_PASSWORD}}"
+        
+        # Redis cache configuration (external service)
+        - name: REDIS_HOST
+          value: "{{REDIS_HOST}}"
+        - name: REDIS_PORT
+          value: "{{REDIS_PORT}}"
+        - name: REDIS_PASSWORD
+          value: "{{REDIS_PASSWORD}}"
+        
+        # External API configuration
+        - name: EXTERNAL_API_URL
+          value: "{{EXTERNAL_API_URL}}"
+        - name: EXTERNAL_API_KEY
+          value: "{{EXTERNAL_API_KEY}}"
+        
+        # Payment service configuration (external service)
+        - name: PAYMENT_SERVICE_URL
+          value: "{{PAYMENT_SERVICE_URL}}"
+        - name: PAYMENT_SERVICE_USERNAME
+          value: "{{PAYMENT_SERVICE_USERNAME}}"
+        - name: PAYMENT_SERVICE_PASSWORD
+          value: "{{PAYMENT_SERVICE_PASSWORD}}"
+        
+        # RabbitMQ configuration (external service)
+        - name: RABBITMQ_HOST
+          value: "{{RABBITMQ_HOST}}"
+        - name: RABBITMQ_PORT
+          value: "{{RABBITMQ_PORT}}"
+        - name: RABBITMQ_USERNAME
+          value: "{{RABBITMQ_USERNAME}}"
+        - name: RABBITMQ_PASSWORD
+          value: "{{RABBITMQ_PASSWORD}}"
+        
+        # Monitoring configuration (external service)
+        - name: MONITORING_URL
+          value: "{{MONITORING_URL}}"
+        - name: MONITORING_USERNAME
+          value: "{{MONITORING_USERNAME}}"
+        - name: MONITORING_PASSWORD
+          value: "{{MONITORING_PASSWORD}}"
+        
+        # Security configuration
+        - name: JWT_SECRET
+          value: "{{JWT_SECRET}}"
+        - name: ENCRYPTION_KEY
+          value: "{{ENCRYPTION_KEY}}"
+        
+        # Directory paths
+        - name: CONFIG_DIR
+          value: "/app/config"
+        - name: LOG_DIR
+          value: "/app/logs"
+        - name: TEMP_DIR
+          value: "/app/temp"
+        - name: UPLOAD_DIR
+          value: "/app/uploads"
+        
+        # JVM options
+        - name: JAVA_OPTS
+          value: "-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+        
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+        
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+        - name: logs
+          mountPath: /app/logs
+        - name: uploads
+          mountPath: /app/uploads
+      
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: uploads
+        emptyDir: {}
+      
+      restartPolicy: Always
