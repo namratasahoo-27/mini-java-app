@@ -7,7 +7,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import jakarta.sql.DataSource;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -82,7 +82,7 @@ public class DatabaseService {
         maxAttempts = 3,
         backoff = @Backoff(delay = 1000, multiplier = 2)
     )
-    public void executeQuery(String sql, Object... params) {
+    public void executeQuery(String sql, Object... params) throws SQLException {
         // Obtain connection from pool - automatically managed by HikariCP
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -116,14 +116,14 @@ public class DatabaseService {
     /**
      * Execute query with single parameter (convenience method)
      */
-    public void executeQuery(String sql, Object param) {
+    public void executeQuery(String sql, Object param) throws SQLException {
         executeQuery(sql, new Object[]{param});
     }
 
     /**
      * Execute query without parameters
      */
-    public void executeQuery(String sql) {
+    public void executeQuery(String sql) throws SQLException {
         executeQuery(sql, new Object[]{});
     }
 
