@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.test.DatabaseServiceTest
 -------------------------------------------------------------------------------
-Tests run: 18, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 1.714 s <<< FAILURE! - in com.test.DatabaseServiceTest
-com.test.DatabaseServiceTest.testConnectSQLException  Time elapsed: 1.181 s  <<< ERROR!
+Tests run: 18, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 1.79 s <<< FAILURE! - in com.test.DatabaseServiceTest
+com.test.DatabaseServiceTest.testConnectSQLException  Time elapsed: 1.225 s  <<< ERROR!
 org.mockito.exceptions.misusing.CannotStubVoidMethodWithReturnValue: 
 
 'registerDriver' is a *void method* and it *cannot* be stubbed with a *return value*!
@@ -91,7 +91,7 @@ Due to the nature of the syntax above problem might occur because:
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:595)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:581)
 
-com.test.DatabaseServiceTest.testConnectSuccessful  Time elapsed: 0.002 s  <<< ERROR!
+com.test.DatabaseServiceTest.testConnectSuccessful  Time elapsed: 0.003 s  <<< ERROR!
 org.mockito.exceptions.misusing.MissingMethodInvocationException: 
 
 when() requires an argument which has to be 'a method call on a mock'.
