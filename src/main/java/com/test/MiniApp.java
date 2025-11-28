@@ -5,10 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Properties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Mini Java Application with intentional containerization blockers for testing
  */
+@SpringBootApplication
 public class MiniApp {
     
     // BLOCKER: Hardcoded port number
@@ -20,7 +23,9 @@ public class MiniApp {
     
     public static void main(String[] args) {
         System.out.println("Starting Mini Java Application...");
-        
+
+        SpringApplication.run(MiniApp.class, args);
+
         MiniApp app = new MiniApp();
         app.initializeApplication();
         app.startServer();
