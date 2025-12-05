@@ -42,6 +42,9 @@ public class MiniApp {
     private String uploadDirectory;
 
     public static void main(String[] args) {
+        if (args == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
         logger.info("Starting Cloud-Native Mini Java Application...");
         SpringApplication.run(MiniApp.class, args);
     }

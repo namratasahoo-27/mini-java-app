@@ -3,7 +3,7 @@
     <toolchain>
         <type>jdk</type>
         <provides>
-            <version>21</version>
+            <version>17</version>
         </provides>
         <configuration>
             <jdkHome>/opt/java/openjdk</jdkHome>

@@ -52,6 +52,12 @@ class DatabaseServiceTest {
     }
 
     @Test
+    void testConstructor_AssignsDataSource() {
+        DatabaseService service = new DatabaseService(dataSource);
+        assertNotNull(service);
+    }
+
+    @Test
     void testIsConnectionValid_Success() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.isValid(5)).thenReturn(true);
@@ -96,6 +102,13 @@ class DatabaseServiceTest {
 
         assertFalse(result);
         verify(dataSource).getConnection();
+    }
+
+    @Test
+    void testIsConnectionValid_ConnectionIsNull() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(null);
+
+        assertThrows(NullPointerException.class, () -> databaseService.isConnectionValid());
     }
 
     @Test
@@ -233,6 +246,15 @@ class DatabaseServiceTest {
     }
 
     @Test
+    void testInitializeExternalServices_MultipleCalls() {
+        assertDoesNotThrow(() -> {
+            databaseService.initializeExternalServices();
+            databaseService.initializeExternalServices();
+            databaseService.initializeExternalServices();
+        });
+    }
+
+    @Test
     void testGetConnection_Success() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.isValid(5)).thenReturn(true);
@@ -264,6 +286,13 @@ class DatabaseServiceTest {
         assertThrows(SQLException.class, () -> databaseService.getConnection());
 
         verify(dataSource).getConnection();
+    }
+
+    @Test
+    void testGetConnection_NullConnection() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(null);
+
+        assertThrows(NullPointerException.class, () -> databaseService.getConnection());
     }
 
     @Test
@@ -415,6 +444,52 @@ class DatabaseServiceTest {
         databaseService.executeQuery("SELECT * FROM users WHERE name = ?", "");
 
         verify(preparedStatement).setObject(1, "");
+        verify(preparedStatement).execute();
+    }
+
+    @Test
+    void testExecuteQuery_NegativeConnectionTimeout() throws SQLException {
+        ReflectionTestUtils.setField(databaseService, "connectionTimeout", -1000);
+
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        databaseService.executeQuery("SELECT * FROM users");
+
+        verify(preparedStatement).setQueryTimeout(-1);
+    }
+
+    @Test
+    void testExecuteQuery_VeryLargeConnectionTimeout() throws SQLException {
+        ReflectionTestUtils.setField(databaseService, "connectionTimeout", Integer.MAX_VALUE);
+
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        databaseService.executeQuery("SELECT * FROM users");
+
+        verify(preparedStatement).setQueryTimeout(Integer.MAX_VALUE / 1000);
+    }
+
+    @Test
+    void testExecuteQuery_SingleParameterOverload() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        databaseService.executeQuery("SELECT * FROM users WHERE id = ?", (Object) 123);
+
+        verify(preparedStatement).setObject(1, 123);
+        verify(preparedStatement).execute();
+    }
+
+    @Test
+    void testExecuteQuery_NoParametersOverload() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        databaseService.executeQuery("SELECT COUNT(*) FROM users");
+
+        verify(preparedStatement, never()).setObject(anyInt(), any());
         verify(preparedStatement).execute();
     }
 }

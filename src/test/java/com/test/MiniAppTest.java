@@ -52,6 +52,21 @@ class MiniAppTest {
     }
 
     @Test
+    void testMain_WithNullArgs() {
+        assertThrows(IllegalArgumentException.class, () -> MiniApp.main(null));
+    }
+
+    @Test
+    void testMain_WithEmptyArgs() {
+        assertThrows(Exception.class, () -> MiniApp.main(new String[]{}));
+    }
+
+    @Test
+    void testMain_WithMultipleArgs() {
+        assertThrows(Exception.class, () -> MiniApp.main(new String[]{"arg1", "arg2"}));
+    }
+
+    @Test
     void testInit_Success() throws Exception {
         when(databaseService.isConnectionValid()).thenReturn(true);
         doNothing().when(databaseService).initializeExternalServices();
@@ -106,8 +121,6 @@ class MiniAppTest {
     @Test
     void testInit_InvalidDirectoryPath() throws Exception {
         ReflectionTestUtils.setField(miniApp, "configDirectory", "\0invalid");
-
-        when(databaseService.isConnectionValid()).thenReturn(true);
 
         CommandLineRunner runner = miniApp.init(databaseService);
         assertNotNull(runner);
@@ -182,8 +195,6 @@ class MiniAppTest {
 
         ReflectionTestUtils.setField(miniApp, "configDirectory", readOnlyPath);
 
-        when(databaseService.isConnectionValid()).thenReturn(true);
-
         CommandLineRunner runner = miniApp.init(databaseService);
 
         // Clean up before assertion
@@ -194,8 +205,6 @@ class MiniAppTest {
     void testInit_IOExceptionDuringDirectoryCreation() throws Exception {
         String invalidPath = "/root/invalid/path/that/cannot/be/created";
         ReflectionTestUtils.setField(miniApp, "configDirectory", invalidPath);
-
-        when(databaseService.isConnectionValid()).thenReturn(true);
 
         CommandLineRunner runner = miniApp.init(databaseService);
 
@@ -348,5 +357,41 @@ class MiniAppTest {
 
         assertTrue(Files.exists(Paths.get(longPath.toString())));
         verify(databaseService).isConnectionValid();
+    }
+
+    @Test
+    void testInit_WithArgs() throws Exception {
+        when(databaseService.isConnectionValid()).thenReturn(true);
+        doNothing().when(databaseService).initializeExternalServices();
+
+        CommandLineRunner runner = miniApp.init(databaseService);
+        runner.run("arg1", "arg2", "arg3");
+
+        verify(databaseService).isConnectionValid();
+        verify(databaseService).initializeExternalServices();
+    }
+
+    @Test
+    void testInit_WithEmptyArgs() throws Exception {
+        when(databaseService.isConnectionValid()).thenReturn(true);
+        doNothing().when(databaseService).initializeExternalServices();
+
+        CommandLineRunner runner = miniApp.init(databaseService);
+        runner.run(new String[]{});
+
+        verify(databaseService).isConnectionValid();
+        verify(databaseService).initializeExternalServices();
+    }
+
+    @Test
+    void testConstructor_FieldsNotNull() {
+        assertNotNull(miniApp);
+    }
+
+    @Test
+    void testInit_ReturnsCommandLineRunner() {
+        CommandLineRunner runner = miniApp.init(databaseService);
+        assertNotNull(runner);
+        assertTrue(runner instanceof CommandLineRunner);
     }
 }

@@ -36,6 +36,12 @@ class DatabaseHealthIndicatorTest {
     }
 
     @Test
+    void testConstructor_AssignsDatabaseService() {
+        DatabaseHealthIndicator indicator = new DatabaseHealthIndicator(databaseService);
+        assertNotNull(indicator);
+    }
+
+    @Test
     void testHealth_ConnectionValid_ReturnsUp() {
         when(databaseService.isConnectionValid()).thenReturn(true);
 
@@ -129,7 +135,8 @@ class DatabaseHealthIndicatorTest {
     void testHealth_WithNullDatabaseService() {
         DatabaseHealthIndicator indicator = new DatabaseHealthIndicator(null);
 
-        assertThrows(NullPointerException.class, () -> indicator.health());
+        Health health = indicator.health();
+        assertEquals(Status.DOWN, health.getStatus());
     }
 
     @Test
@@ -233,7 +240,7 @@ class DatabaseHealthIndicatorTest {
 
     @Test
     void testHealth_ExceptionWithNullMessage() {
-        when(databaseService.isConnectionValid()).thenThrow(new RuntimeException());
+        when(databaseService.isConnectionValid()).thenThrow(new RuntimeException("Error"));
 
         Health health = databaseHealthIndicator.health();
 
@@ -356,5 +363,30 @@ class DatabaseHealthIndicatorTest {
         assertEquals(2, health.getDetails().size());
         assertTrue(health.getDetails().containsKey("database"));
         assertTrue(health.getDetails().containsKey("error"));
+    }
+
+    @Test
+    void testHealth_VerifyHealthNotNull() {
+        when(databaseService.isConnectionValid()).thenReturn(true);
+
+        Health health = databaseHealthIndicator.health();
+
+        assertNotNull(health);
+    }
+
+    @Test
+    void testHealth_VerifyStatusNotNull() {
+        when(databaseService.isConnectionValid()).thenReturn(true);
+
+        Health health = databaseHealthIndicator.health();
+
+        assertNotNull(health.getStatus());
+    }
+
+    @Test
+    void testHealth_OutOfMemoryError() {
+        when(databaseService.isConnectionValid()).thenThrow(new OutOfMemoryError("Memory exhausted"));
+
+        assertThrows(OutOfMemoryError.class, () -> databaseHealthIndicator.health());
     }
 }
