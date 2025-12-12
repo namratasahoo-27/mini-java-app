@@ -1,0 +1,1 @@
+Multi-stage build with Maven builder and Eclipse Temurin runtime

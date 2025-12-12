@@ -1,0 +1,1 @@
+Comprehensive ECS deployment script with ALB creation, service management, and health checks

@@ -1,0 +1,1 @@
+Interactive script with registry selection (ECR/Docker Hub) and automated repository creation

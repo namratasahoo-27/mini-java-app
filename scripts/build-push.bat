@@ -1,0 +1,1 @@
+Windows-compatible script with delayed expansion and proper error handling
