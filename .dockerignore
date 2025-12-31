@@ -1,0 +1,65 @@
+# Maven build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven wrapper (never use in Docker)
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle wrapper (never use in Docker)
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+README*
+LICENSE*
+
+# Logs
+*.log
+logs/
+
+# Test files
+test/
+src/test/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Local configuration
+local.properties
+.env
+.env.local
+
+# Generated files
+generated/
+dist/
+build/
+out/
